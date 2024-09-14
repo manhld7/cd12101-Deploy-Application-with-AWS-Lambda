@@ -1,8 +1,29 @@
+import middy from '@middy/core'
+import cors from '@middy/http-cors'
+import httpErrorHandler from '@middy/http-error-handler'
+import { parseUserId as getUserId } from './../../auth/utils.mjs'
+import { deleteTodoLogic } from '../../businessLogic/todos.mjs'
 
-export function handler(event) {
-  const todoId = event.pathParameters.todoId
+export const handler = middy()
+  .use(httpErrorHandler())
+  .use(
+    cors({
+      credentials: true
+    })
+  )
+  .handler(async (event) => {
+    console.log('Processing event: ', event)
 
-  // TODO: Remove a TODO item by id
-  return undefined
-}
+    const todoId = event.pathParameters.todoId
+    const userId = getUserId(event)
+
+    await deleteTodoLogic(userId, todoId)
+
+    return {
+      statusCode: 202,
+      message: `TODO item ${todoId} deleted successfully`
+    }
+  })
+
+
 
