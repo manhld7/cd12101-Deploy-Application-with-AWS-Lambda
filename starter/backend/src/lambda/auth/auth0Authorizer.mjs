@@ -46,8 +46,16 @@ async function verifyToken(authHeader) {
   const token = getToken(authHeader)
   const jwt = jsonwebtoken.decode(token, { complete: true })
 
-  // TODO: Implement token verification
-  return undefined;
+  const response = await Axios.get(jwksUrl)
+  const keys = response.data.keys
+  const signingKey = keys.find(key => key.kid === jwt.header.kid)
+
+  if (!signingKey) {
+    throw new Error('Invalid signing key')
+  }
+
+  const publicKey = signingKey.x5c[0]
+  return jsonwebtoken.verify(token, `-----BEGIN CERTIFICATE-----\n${publicKey}\n-----END CERTIFICATE-----`, { algorithms: ['RS256'] })
 }
 
 function getToken(authHeader) {
