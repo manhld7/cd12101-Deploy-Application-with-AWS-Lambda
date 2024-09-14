@@ -3,14 +3,16 @@ import { DynamoDBDocumentClient, QueryCommand, PutCommand, DeleteCommand, Update
 import { createLogger } from '../utils/logger.mjs'
 
 const logger = createLogger('todoAccess')
-const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-east-1" }));
-const todosTable = process.env.TODOS_TABLE;
+const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-east-1" }))
+const todosTable = process.env.TODOS_TABLE
+const todoCreatedAtIndex = process.env.TODOS_CREATED_AT_INDEX
 
 export const getTodos = async (userId) => {
     logger.info('Getting all todo items')
 
     const command = new QueryCommand({
         TableName: todosTable,
+        IndexName: todoCreatedAtIndex,
         KeyConditionExpression: 'userId = :userId',
         ExpressionAttributeValues: {
             ':userId': userId
@@ -25,6 +27,7 @@ export const getTodo = async (userId, todoId) => {
 
     const command = new QueryCommand({
         TableName: todosTable,
+        IndexName: todoCreatedAtIndex,
         KeyConditionExpression: 'userId = :userId, todoId = :todoId',
         ExpressionAttributeValues: {
             ':userId': userId,
@@ -50,24 +53,24 @@ export const updateTodo = async (userId, todoId, updatedTodo) => {
     const command = new UpdateCommand({
         TableName: todosTable,
         Key: {
-          userId,
-          todoId
+            userId,
+            todoId
         },
         UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done',
         ExpressionAttributeNames: {
-          '#name': 'name'
+            '#name': 'name'
         },
         ExpressionAttributeValues: {
-          ':name': updatedTodo.name,
-          ':dueDate': updatedTodo.dueDate,
-          ':done': updatedTodo.done
+            ':name': updatedTodo.name,
+            ':dueDate': updatedTodo.dueDate,
+            ':done': updatedTodo.done
         }
     })
     await docClient.send(command);
 }
 
 export const deleteTodo = async (userId, todoId) => {
-    const command = new DeleteCommand ({
+    const command = new DeleteCommand({
         TableName: todosTable,
         Key: { userId, todoId }
     });
