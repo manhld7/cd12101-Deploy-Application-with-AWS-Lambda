@@ -4,7 +4,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 const logger = createLogger('generateUploadUrl')
 const bucketName = process.env.TODOS_S3_BUCKET
-const urlExpiration = Number(process.env.SIGNED_URL_EXPIRATION)
+const urlExpiration = parseInt(process.env.SIGNED_URL_EXPIRATION)
 const region = process.env.REGION
 const client = new S3Client({ region });
 

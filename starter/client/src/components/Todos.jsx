@@ -29,6 +29,7 @@ export function Todos() {
     return (
       <Grid padded>
         {todos.map((todo, pos) => {
+          console.log('todoId: '+ todo?.attachmentUrl)
           return (
             <Grid.Row key={todo?.todoId}>
               <Grid.Column width={1} verticalAlign="middle">
