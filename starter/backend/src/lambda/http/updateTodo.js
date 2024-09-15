@@ -1,8 +1,8 @@
 import middy from '@middy/core'
 import cors from '@middy/http-cors'
 import httpErrorHandler from '@middy/http-error-handler'
-import { parseUserId as getUserId } from './../../auth/utils.mjs'
-import { getTodoLogic, updateTodoLogic } from '../../businessLogic/todos.mjs'
+import { getUserId } from './../../auth/utils.mjs'
+import { updateTodoLogic } from '../../businessLogic/todos.mjs'
 
 export const handler = middy()
   .use(httpErrorHandler())
@@ -18,22 +18,11 @@ export const handler = middy()
     const updatedTodo = JSON.parse(event.body)
     const userId = getUserId(event.headers.Authorization)
     try {
-      const checkTodo = await getTodoLogic(userId)
-      if (!checkTodo.Item) {
-        return {
-            statusCode: 404,
-            body: JSON.stringify({
-                error: `TODO item ${todoId} not found`
-            })
-        }
-      }
-
-      const result = await updateTodoLogic(userId, updatedTodo)
+      await updateTodoLogic(userId, todoId, updatedTodo)
       return {
         statusCode: 200,
         body: JSON.stringify({
           message: `TODO item ${todoId} updated successfully`,
-          items: result
         })
       }
     } catch (error) {

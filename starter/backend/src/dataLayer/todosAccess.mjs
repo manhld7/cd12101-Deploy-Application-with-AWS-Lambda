@@ -28,7 +28,7 @@ export const getTodo = async (userId, todoId) => {
     const command = new QueryCommand({
         TableName: todosTable,
         IndexName: todoCreatedAtIndex,
-        KeyConditionExpression: 'userId = :userId, todoId = :todoId',
+        KeyConditionExpression: 'userId = :userId AND todoId = :todoId',
         ExpressionAttributeValues: {
             ':userId': userId,
             ':todoId': todoId
@@ -50,31 +50,43 @@ export const createTodo = async (newTodo) => {
 
 export const updateTodo = async (userId, todoId, updatedTodo) => {
     logger.info(`Updating a todo item: ${todoId}`)
-    const command = new UpdateCommand({
-        TableName: todosTable,
-        Key: {
-            userId,
-            todoId
-        },
-        UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done',
-        ExpressionAttributeNames: {
-            '#name': 'name'
-        },
-        ExpressionAttributeValues: {
-            ':name': updatedTodo.name,
-            ':dueDate': updatedTodo.dueDate,
-            ':done': updatedTodo.done
-        }
-    })
-    await docClient.send(command);
+    try {
+        const command = new UpdateCommand({
+            TableName: todosTable,
+            Key: {
+                userId,
+                todoId
+            },
+            ConditionExpression: 'attribute_exists(todoId)',
+            UpdateExpression: 'set #na = :na, dueDate = :du, done = :do',
+            ExpressionAttributeNames: {
+                '#na': 'name'
+            },
+            ExpressionAttributeValues: {
+                ':na': updatedTodo.name,
+                ':du': updatedTodo.dueDate,
+                ':do': updatedTodo.done
+            }
+        })
+        await docClient.send(command);
+    }
+    catch (error) {
+        logger.error(error)
+    }
 }
 
 export const deleteTodo = async (userId, todoId) => {
-    const command = new DeleteCommand({
-        TableName: todosTable,
-        Key: { userId, todoId }
-    });
-    await docClient.send(command);
+    logger.info(`Delete a todo item: ${todoId}`)
+    try {
+        const command = new DeleteCommand({
+            TableName: todosTable,
+            Key: { userId, todoId }
+        });
+        await docClient.send(command);
+    }
+    catch (error) {
+        logger.error(error)
+    }
 }
 
 export const saveImgUrl = async (userId, todoId, attachmentUrl) => {

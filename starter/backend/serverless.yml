@@ -20,6 +20,7 @@ provider:
     TODOS_CREATED_AT_INDEX: CreatedAtIndex
     TODOS_S3_BUCKET: todos-bucket-547175378651-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 1800
+    REGION: us-east-1
   
 functions:
   Auth:
@@ -165,6 +166,8 @@ resources:
           PublicAccessBlockConfiguration:
             BlockPublicPolicy: false
             RestrictPublicBuckets: false
+            BlockPublicAcls: false
+            IgnorePublicAcls: false
           CorsConfiguration:
             CorsRules:
               - AllowedOrigins: 

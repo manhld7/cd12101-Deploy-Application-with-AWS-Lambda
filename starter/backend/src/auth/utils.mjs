@@ -11,3 +11,19 @@ export function parseUserId(jwtToken) {
   const decodedJwt = decode(jwtToken)
   return decodedJwt.sub
 }
+
+export function getToken(authHeader) {
+  if (!authHeader) logger.error('No authentication header')
+
+  if (!authHeader.toLowerCase().startsWith('bearer '))
+    logger.error('Invalid authentication header')
+
+  const split = authHeader.split(' ')
+  const token = split[1]
+  return token
+}
+
+export function getUserId(authHeader) {
+  const token = getToken(authHeader)
+  return parseUserId(token)
+}

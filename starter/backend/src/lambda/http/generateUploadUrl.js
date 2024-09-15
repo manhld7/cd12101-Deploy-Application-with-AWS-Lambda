@@ -1,8 +1,9 @@
 import middy from '@middy/core'
 import cors from '@middy/http-cors'
 import httpErrorHandler from '@middy/http-error-handler'
-import { parseUserId as getUserId } from './../../auth/utils.mjs'
+import { getUserId } from './../../auth/utils.mjs'
 import { generateUploadUrl } from '../../fileStorage/attachmentUtils.mjs'
+import { saveImgUrlLogic } from '../../businessLogic/todos.mjs'
 
 export const handler = middy()
   .use(httpErrorHandler())
@@ -18,7 +19,7 @@ export const handler = middy()
     const todoId = event.pathParameters.todoId
     const uploadUrl = await generateUploadUrl(todoId)
 
-    await saveImgUrl(userId, todoId, uploadUrl)
+    await saveImgUrlLogic(userId, todoId, uploadUrl)
 
     return {
       statusCode: 200,

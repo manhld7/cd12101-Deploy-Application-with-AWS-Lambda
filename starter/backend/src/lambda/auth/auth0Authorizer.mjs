@@ -1,26 +1,27 @@
 import jsonwebtoken from 'jsonwebtoken'
+import { getToken } from './../../auth/utils.mjs'
 import { createLogger } from '../../utils/logger.mjs'
 
 const logger = createLogger('auth')
 
 const certificate = `-----BEGIN CERTIFICATE-----
-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
+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
-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
+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
 -----END CERTIFICATE-----`
 
 export async function handler(event) {
@@ -64,13 +65,3 @@ async function verifyToken(authHeader) {
   return jsonwebtoken.verify(token, certificate, { algorithms: ['RS256'] })
 }
 
-function getToken(authHeader) {
-  if (!authHeader) throw new Error('No authentication header')
-
-  if (!authHeader.toLowerCase().startsWith('bearer '))
-    throw new Error('Invalid authentication header')
-
-  const split = authHeader.split(' ')
-  const token = split[1]
-  return token
-}

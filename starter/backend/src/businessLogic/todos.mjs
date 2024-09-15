@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { getTodos, getTodo, createTodo, updateTodo, deleteTodo } from '../dataLayer/todosAccess.mjs'
+import { getTodos, getTodo, createTodo, updateTodo, deleteTodo, saveImgUrl } from '../dataLayer/todosAccess.mjs'
 
 export const getTodosLogic = async (userId) => {
     return getTodos(userId)
@@ -26,4 +26,8 @@ export const updateTodoLogic = async (userId, todoId, todo) => {
 
 export const deleteTodoLogic = async (userId, todoId) => {
     return deleteTodo(userId, todoId)
+}
+
+export const saveImgUrlLogic = async (userId, todoId, attachmentUrl) => {
+    return saveImgUrl(userId, todoId, attachmentUrl)
 }
