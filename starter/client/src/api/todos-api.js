@@ -27,6 +27,7 @@ export async function createTodo(idToken, newTodo) {
       }
     }
   )
+  console.log(`response TODO: ${response.data.item}`)
   return response.data.item
 }
 

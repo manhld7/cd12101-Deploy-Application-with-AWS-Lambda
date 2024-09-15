@@ -166,8 +166,6 @@ resources:
           PublicAccessBlockConfiguration:
             BlockPublicPolicy: false
             RestrictPublicBuckets: false
-            BlockPublicAcls: false
-            IgnorePublicAcls: false
           CorsConfiguration:
             CorsRules:
               - AllowedOrigins: 
@@ -186,7 +184,7 @@ resources:
       Type: AWS::S3::BucketPolicy
       Properties:
         PolicyDocument:
-          Id: MyPolicy
+          Id: bucket-policy-547175378651
           Version: "2012-10-17"
           Statement:
             - Sid: PublicReadForGetBucketObjects

@@ -1,11 +1,15 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, QueryCommand, PutCommand, DeleteCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import AWSXRay from 'aws-xray-sdk-core'
 import { createLogger } from '../utils/logger.mjs'
 
 const logger = createLogger('todoAccess')
-const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-east-1" }))
+const region = process.env.REGION
 const todosTable = process.env.TODOS_TABLE
 const todoCreatedAtIndex = process.env.TODOS_CREATED_AT_INDEX
+const dynamoDbXRay = AWSXRay.captureAWSv3Client(new DynamoDBClient({ region: region }))
+const docClient = DynamoDBDocumentClient.from(dynamoDbXRay)
+
 
 export const getTodos = async (userId) => {
     logger.info('Getting all todo items')
